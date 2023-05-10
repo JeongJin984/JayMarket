@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    hikari:
+      jdbc-url:
+      username: root
+      password: pass
