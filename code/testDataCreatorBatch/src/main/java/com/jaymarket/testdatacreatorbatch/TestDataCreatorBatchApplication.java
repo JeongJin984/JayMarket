@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TestDataCreatorBatchApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(TestDataCreatorBatchApplication.class, args);
 	}
 

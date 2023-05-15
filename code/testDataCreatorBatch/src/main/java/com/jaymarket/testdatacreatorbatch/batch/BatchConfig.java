@@ -5,6 +5,7 @@ import com.jaymarket.testdatacreatorbatch.batch.domain.JayTransactVO;
 import com.jaymarket.testdatacreatorbatch.batch.domain.TransactVO;
 import com.jaymarket.testdatacreatorbatch.batch.processor.FileItemProcessor;
 import com.jaymarket.testdatacreatorbatch.batch.processor.JayTransactItemProcessor;
+import com.jaymarket.testdatacreatorbatch.batch.task.ErrorHandleTask;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -31,10 +32,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.AsyncTaskExecutor;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 @Configuration
 @RequiredArgsConstructor
@@ -43,25 +47,20 @@ public class BatchConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
 
+    private final ErrorHandleTask errorHandleTask;
     @Bean
     public Job testDataCreationJob() {
         return jobBuilderFactory.get("dataCreationJob")
                 .incrementer(new RunIdIncrementer())
-                .start(createSimpleData())
-                .next(csvProcess())
+                .start(handleError())
                 .build();
     }
 
+
     @Bean
-    public Step createSimpleData() {
-        return stepBuilderFactory.get("createSimpleData")
-                .tasklet(new Tasklet() {
-                    @Override
-                    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("test!!!");
-                        return RepeatStatus.FINISHED;
-                    }
-                })
+    public Step handleError() {
+        return stepBuilderFactory.get("asdf")
+                .tasklet(errorHandleTask)
                 .build();
     }
 
